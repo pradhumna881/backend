@@ -18,12 +18,24 @@ app.use(helmet({
 // Enable compression
 app.use(compression());
 
-// CORS setup
+// CORS setup - UPDATED FOR NETLIFY CONNECTION
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://myrehabcentre.com']
-    : ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
+  origin: [
+    'https://myrehabcentre.com',           // Your custom domain
+    'https://addictionfreelifestyle.netlify.app', // Your Netlify subdomain
+    'http://localhost:3000',               // Local development
+    'http://localhost:5173'                // Vite dev server
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'X-Requested-With',
+    'X-Requested-At'
+  ]
 }));
 
 // Body parsing
@@ -57,8 +69,8 @@ app.get('/api/health-check', (req, res) => {
 app.use('/api/addictions', require('./routes/addictions'));
 app.use('/api/health', require('./routes/health'));
 
-// 404 handler
-app.use('*', (req, res) => {
+// 404 handler - UPDATED FOR EXPRESS 5 COMPATIBILITY
+app.use('/*catchAll', (req, res) => {
   res.status(404).json({
     status: 'error',
     message: 'API endpoint not found'
